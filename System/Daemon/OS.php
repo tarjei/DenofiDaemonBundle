@@ -253,7 +253,7 @@ class OS
         }
 
         if (!$dir) {
-            $try_dir = realpath(dirname(__FILE__).'/../../data');
+            $try_dir = realpath(dirname(__FILE__).'Data');
             if (!is_dir($try_dir)) {
                 $tried_dirs[] = $try_dir;
             } else {
