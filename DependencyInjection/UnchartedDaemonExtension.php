@@ -49,9 +49,9 @@ class UnchartedDaemonExtension extends Extension
         $defaults = array(
             'appName'               => $name,
             'appDir'                => $container->getParameter('kernel.root_dir'),
-            'appDescription'        => 'Uncharted System Daemon',
+            'appDescription'        => 'Symfony2 System Daemon',
             'logLocation'           => $container->getParameter('kernel.cache_dir') . '/'. $name . '/' . $container->getParameter('kernel.environment'). '.' . $name . '.daemon.log',
-            'authorName'            => 'Uncharted',
+            'authorName'            => 'Symfony2',
             'authorEmail'           => 'symfony2.kernel@127.0.0.1',
             'appPidLocation'        => $container->getParameter('kernel.cache_dir') . '/'. $name . '/' . $name . '.daemon.pid',
             'sysMaxExecutionTime'   => 0,

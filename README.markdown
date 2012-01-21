@@ -5,7 +5,7 @@ UnchartedDaemonBundle is a Symfony2 bundle that wraps the PEAR library
 System_Daemon created by Kevin Vanzonneveld and is a fork of CodeMeme's
 Daemon Bundle which can be found at:
 
->> https://github.com/CodeMeme/CodeMemeDaemonBundle
+https://github.com/CodeMeme/CodeMemeDaemonBundle
 
 This bundle allows you to easily create System Daemons in PHP that interact
 tightly with your Symfony2 project, with the added functionality of allowing
@@ -94,8 +94,6 @@ and usages of the bundle.
 
 The following documents are available:
 
-1. [Creating A Daemon](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/doc/creating_daemons.md)
-2. [Commanding Daemons](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/doc/commanding_daemons.md)
-3. [Supplemental Documenation](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/doc/supplemental.md)
-4. [Configuration Reference](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/doc/configuration_reference.md)
-
+1. [Creating A Daemon](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/docs/creating_daemons.md)
+2. [Running Daemons from the Commandline](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/docs/commanding_daemons.md)
+3. [Configuration Reference](https://github.com/tthacker/UnchartedDaemonBundle/blob/master/Resources/docs/configuration_reference.md)
