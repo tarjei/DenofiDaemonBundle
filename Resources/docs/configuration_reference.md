@@ -3,7 +3,7 @@ UnchartedDaemonBundle Configuration Reference
 
 All available configuration options are listed below with their default values.
 
-#### RunAs ####
+#### RunAs
 You can run the daemon as a different user or group depending on what is best for your application.
 By default it will resolve the user and group of the user who is running the daemon,
 but if you want to run as a different user you can use the appUser, appGroup or appRunAsGID, appRunAsUID options.
@@ -12,11 +12,13 @@ Remember if you need to run as a different user you must start the daemon as sud
 
 To find out the group and user id of a specific user you can use the following commands.
 
- ```johndoe@your-pc:~/$ id -u www-data
-    johndoe@your-pc:~/$ id -g www-data```
+``` bash
+    johndoe@your-pc:~/$ id -u www-data
+    johndoe@your-pc:~/$ id -g www-data
+```
 
 
-#### Full Configuration Example ####
+#### Full Configuration Example
 
 There is a separate configuration for each daemon you create,
 please replace `example` below with the name of your daemon.
@@ -42,3 +44,9 @@ uncharted_daemon:
             appRunAsGID:            1000
             appRunAsUID:            1000
 ```
+
+
+
+
+
+
