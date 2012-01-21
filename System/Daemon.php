@@ -1,33 +1,16 @@
 <?php
 
-namespace CodeMeme\Bundle\CodeMemeDaemonBundle\System;
-
-/* vim: set noai expandtab tabstop=4 softtabstop=4 shiftwidth=4: */
+namespace Uncharted\Bundle\UnchartedDaemonBundle\System;
 
 /**
  * Daemon turns PHP-CLI scripts into daemons.
- *
- * PHP version 5
- *
- * @category  CodeMeme
- * @package   CodeMemeDaemonBundle
- * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
- * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
- * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
- * @version   SVN: Release: $Id$
- * @link      http://trac.plutonia.nl/projects/Daemon
- */
-
-/**
- * Daemon. Create daemons with practicle functions
- * like Daemon::start()
  *
  * Requires PHP build with --enable-cli --with-pcntl.
  * Only runs on *NIX systems, because Windows lacks of the pcntl ext.
  *
  * PHP version 5
  *
- * @category  CodeMeme
+ * @category  Uncharted
  * @package   DaemonBundle
  * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -37,9 +20,9 @@ namespace CodeMeme\Bundle\CodeMemeDaemonBundle\System;
  *
  */
  
-use CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon\Exception;
-use CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon\Options;
-use CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon\OS;
+use Uncharted\Bundle\UnchartedDaemonBundle\System\Daemon\Exception;
+use Uncharted\Bundle\UnchartedDaemonBundle\System\Daemon\Options;
+use Uncharted\Bundle\UnchartedDaemonBundle\System\Daemon\OS;
  
 class Daemon
 {

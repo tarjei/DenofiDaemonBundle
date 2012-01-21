@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon\OS;
+namespace Uncharted\Bundle\UnchartedDaemonBundle\System\Daemon\OS;
 
 /* vim: set noai expandtab tabstop=4 softtabstop=4 shiftwidth=4: */
 /**
@@ -8,8 +8,8 @@ namespace CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon\OS;
  * 
  * PHP version 5
  *
- * @category  CodeMeme
- * @package   CodeMemeDaemonBundle
+ * @category  Uncharted
+ * @package   UnchartedDaemonBundle
  * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence

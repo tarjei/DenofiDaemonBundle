@@ -1,26 +1,23 @@
 <?php
 
-namespace CodeMeme\Bundle\CodeMemeDaemonBundle;
+namespace Uncharted\Bundle\UnchartedDaemonBundle;
+
+use Uncharted\Bundle\UnchartedDaemonBundle\System\Daemon as System_Daemon;
+use Uncharted\Bundle\UnchartedDaemonBundle\System\Daemon\Exception as UnchartedDaemonBundleException;
 
 /**
  * Daemon is a php5 wrapper class for the PEAR library System_Daemon
  *
- * PHP version 5
- *
- * @category  CodeMeme
- * @package   CodeMemeDaemonBundle
+ * @category  Uncharted
+ * @package   UnchartedDaemonBundle
  * @author    Jesse Greathouse <jesse.greathouse@gmail.com>
+ * @author    Trent Thacker <trent@unchartedcoffee.com>
  * @copyright 2011 CodeMeme (https://github.com/organizations/CodeMeme)
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD Licence
  * @link      https://github.com/CodeMeme/CodeMemeDaemonBundle
  */
-
-use CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon as System_Daemon;
-use CodeMeme\Bundle\CodeMemeDaemonBundle\System\Daemon\Exception as CodeMemeDaemonBundleException;
-
 class Daemon
 {
-
     private $_config = array();
     private $_pid;
     private $_interval = 2;
@@ -31,21 +28,21 @@ class Daemon
             $options = $this->validateOptions($options);
             $this->setConfig($options);
         } else {
-            throw new CodeMemeDaemonBundleException('Daemon instantiated without a config');
+            throw new UnchartedDaemonBundleException('Daemon instantiated without a config');
         }
     }
     
     private function validateOptions($options)
     {
         if (null === ($options['appRunAsUID'])) {
-            throw new CodeMemeDaemonBundleException('Daemon instantiated without user or group');
+            throw new UnchartedDaemonBundleException('Daemon instantiated without user or group');
         }
             
         if (!isset($options['appRunAsGID'])) {
             try {
                 $user = posix_getpwuid($options['appRunAsUID']);
                 $options['appRunAsGID'] = $user['gid'];
-            } catch (CodeMemeDaemonBundleException $e) {
+            } catch (UnchartedDaemonBundleException $e) {
                 echo 'Exception caught: ',  $e->getMessage(), "\n";
             }
         }

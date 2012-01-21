@@ -5,15 +5,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="codememe.daemon.filesystem.class">Symfony\Component\HttpKernel\Util\Filesystem</parameter>
-        <parameter key="codememe.daemon.class">CodeMeme\Bundle\CodeMemeDaemonBundle\Daemon</parameter>
-        <parameter key="example.control.class">CodeMeme\Bundle\CodeMemeDaemonBundle\Service\ExampleControl</parameter>
+        <parameter key="uncharted.daemon.filesystem.class">Symfony\Component\HttpKernel\Util\Filesystem</parameter>
+        <parameter key="uncharted.daemon.class">Uncharted\UnchartedDaemonBundle\Daemon</parameter>
     </parameters>
-
-    <services>
-        <service id="example.control" class="%example.control.class%" >
-             <argument type="service" id="logger" />
-        </service>
-        <service id="codememe.daemon.filesystem" class="%codememe.daemon.filesystem.class%" />
-    </services>
 </container>

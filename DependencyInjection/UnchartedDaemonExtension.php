@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeMeme\Bundle\CodeMemeDaemonBundle\DependencyInjection;
+namespace Uncharted\Bundle\UnchartedDaemonBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -8,14 +8,14 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader;
-use CodeMeme\Bundle\CodeMemeDaemonBundle\CodeMemeDaemonBundleException;
+use Uncharted\Bundle\UnchartedDaemonBundle\UnchartedDaemonBundleException;
 
 /**
  * This is the class that loads and manages your bundle configuration
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class CodeMemeDaemonExtension extends Extension
+class UnchartedDaemonExtension extends Extension
 {
     private $defaultUser = null;
 
@@ -53,9 +53,9 @@ class CodeMemeDaemonExtension extends Extension
         $defaults = array(
             'appName'               => $name,
             'appDir'                => $container->getParameter('kernel.root_dir'),
-            'appDescription'        => 'CodeMeme System Daemon',
+            'appDescription'        => 'Uncharted System Daemon',
             'logLocation'           => $container->getParameter('kernel.cache_dir') . '/'. $name . '/' . $container->getParameter('kernel.environment'). '.' . $name . '.daemon.log',
-            'authorName'            => 'CodeMeme',
+            'authorName'            => 'Uncharted',
             'authorEmail'           => 'symfony2.kernel@127.0.0.1',
             'appPidLocation'        => $container->getParameter('kernel.cache_dir') . '/'. $name . '/' . $name . '.daemon.pid',
             'sysMaxExecutionTime'   => 0,
@@ -72,14 +72,14 @@ class CodeMemeDaemonExtension extends Extension
         //merges each configured daemon with default configs 
         //and makes sure the pid directory is writable
         $cacheDir = $container->getParameter('kernel.cache_dir'); 
-        $filesystem = $container->get('codememe.daemon.filesystem');
+        $filesystem = $container->get('Uncharted.daemon.filesystem');
         foreach ($config['daemons'] as $name => $cnf)
         {
             if (NULL == $cnf) $cnf = array();
             try {
                 $filesystem->mkdir($cacheDir . '/'. $name . '/', 0777);
-            } catch (CodeMemeDaemonBundleException $e) {
-                echo 'CodeMemeDaemonBundle exception: ',  $e->getMessage(), "\n";
+            } catch (UnchartedDaemonBundleException $e) {
+                echo 'UnchartedDaemonBundle exception: ',  $e->getMessage(), "\n";
             }
             
             if (isset($cnf['appUser']) || isset($cnf['appGroup'])) {
