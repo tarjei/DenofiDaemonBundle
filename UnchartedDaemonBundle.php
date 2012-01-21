@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\Bundle\UnchartedDaemonBundle;
+namespace Uncharted\DaemonBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
