@@ -2,19 +2,14 @@
 
 namespace Uncharted\Bundle\UnchartedDaemonBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\Config\FileLocator;
 use Uncharted\Bundle\UnchartedDaemonBundle\UnchartedDaemonBundleException;
 
-/**
- * This is the class that loads and manages your bundle configuration
- *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
- */
 class UnchartedDaemonExtension extends Extension
 {
     private $defaultUser = null;
@@ -23,9 +18,10 @@ class UnchartedDaemonExtension extends Extension
     {
         $processor = new Processor();
         $configuration = new Configuration();
-        //$config = $processor->processConfiguration($configuration, $configs);
+
+        $config = $processor->processConfiguration($configuration, $configs);
         
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('daemon.xml');
         
         $config = $this->mergeExternalConfig($configs);
@@ -72,13 +68,16 @@ class UnchartedDaemonExtension extends Extension
         //merges each configured daemon with default configs 
         //and makes sure the pid directory is writable
         $cacheDir = $container->getParameter('kernel.cache_dir'); 
-        $filesystem = $container->get('Uncharted.daemon.filesystem');
+        $filesystem = $container->get('uncharted.daemon.filesystem');
         foreach ($config['daemons'] as $name => $cnf)
         {
-            if (NULL == $cnf) $cnf = array();
+            if (NULL == $cnf)
+                $cnf = array();
+
             try {
                 $filesystem->mkdir($cacheDir . '/'. $name . '/', 0777);
-            } catch (UnchartedDaemonBundleException $e) {
+            }
+            catch (UnchartedDaemonBundleException $e) {
                 echo 'UnchartedDaemonBundle exception: ',  $e->getMessage(), "\n";
             }
             
@@ -103,8 +102,7 @@ class UnchartedDaemonExtension extends Extension
                 }
             }
             
-            $container->setParameter($name.'.daemon.options', 
-                                     array_merge($this->getDefaultConfig($name, $container), $cnf));
+            $container->setParameter($name.'.daemon.options', array_merge($this->getDefaultConfig($name, $container), $cnf));
         }
         
     }
