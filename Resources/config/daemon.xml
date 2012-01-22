@@ -6,6 +6,10 @@
 
     <parameters>
         <parameter key="uncharted.daemon.filesystem.class">Symfony\Component\HttpKernel\Util\Filesystem</parameter>
-        <parameter key="uncharted.daemon.class">Uncharted\DaemonBundle\Daemon</parameter>
+        <parameter key="uncharted.daemon.class">Uncharted\DaemonBundle\System\Daemon</parameter>
     </parameters>
+
+    <services>
+        <service id="uncharted.daemon.filesystem" class="%uncharted.daemon.filesystem.class%" />
+    </services>
 </container>
