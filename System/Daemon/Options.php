@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System\Daemon;
+namespace Uncharted\DaemonBundle\System\Daemon;
 
 /**
  * Mechanism for validating, getting and setting a predefined set of options.

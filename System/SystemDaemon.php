@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System;
+namespace Uncharted\DaemonBundle\System;
 
 /**
  * Daemon turns PHP-CLI scripts into daemons.
@@ -20,9 +20,9 @@ namespace Uncharted\UnchartedDaemonBundle\System;
  *
  */
  
-use Uncharted\UnchartedDaemonBundle\System\Daemon\Exception;
-use Uncharted\UnchartedDaemonBundle\System\Daemon\Options;
-use Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
+use Uncharted\DaemonBundle\System\Daemon\Exception;
+use Uncharted\DaemonBundle\System\Daemon\Options;
+use Uncharted\DaemonBundle\System\Daemon\OS;
  
 class SystemDaemon
 {

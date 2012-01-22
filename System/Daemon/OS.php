@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System\Daemon;
+namespace Uncharted\DaemonBundle\System\Daemon;
 
 /**
  * Operating System focussed functionality.

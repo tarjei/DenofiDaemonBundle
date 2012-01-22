@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
+namespace Uncharted\DaemonBundle\System\Daemon\OS;
 
 /**
  * A System_Daemon_OS driver for Ubuntu. Based on Debian
@@ -15,7 +15,7 @@ namespace Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
  * * 
  */
 
-use Uncharted\UnchartedDaemonBundle\System\Daemon\OS\Debian;
+use Uncharted\DaemonBundle\System\Daemon\OS\Debian;
 
 class Ubuntu extends Debian
 {

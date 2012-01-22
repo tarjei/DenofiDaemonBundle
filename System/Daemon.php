@@ -1,15 +1,15 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System;
+namespace Uncharted\DaemonBundle\System;
 
-use Uncharted\UnchartedDaemonBundle\System\SystemDaemon;
-use Uncharted\UnchartedDaemonBundle\System\Daemon\Exception as UnchartedDaemonBundleException;
+use Uncharted\DaemonBundle\System\SystemDaemon;
+use Uncharted\DaemonBundle\System\Daemon\Exception as UnchartedDaemonBundleException;
 
 /**
  * Daemon is a php5 wrapper class for the PEAR library System_Daemon
  *
  * @category  Uncharted
- * @package   UnchartedDaemonBundle
+ * @package   DaemonBundle
  * @author    Jesse Greathouse <jesse.greathouse@gmail.com>
  * @author    Trent Thacker <trent@unchartedcoffee.com>
  * @copyright 2011 CodeMeme (https://github.com/organizations/CodeMeme)

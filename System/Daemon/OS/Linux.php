@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
+namespace Uncharted\DaemonBundle\System\Daemon\OS;
 
 /**
  * A System_Daemon_OS driver for Linux based Operating Systems
@@ -15,7 +15,7 @@ namespace Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
  * * 
  */
  
-use Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
+use Uncharted\DaemonBundle\System\Daemon\OS;
 
 class Linux extends OS
 {

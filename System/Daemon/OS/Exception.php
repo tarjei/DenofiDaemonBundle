@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\UnchartedDaemonBundle\System\Daemon\OS;
+namespace Uncharted\DaemonBundle\System\Daemon\OS;
 
 /**
  * An exception thrown by System_Daemon_OS when it encounters an unrecoverable error.
