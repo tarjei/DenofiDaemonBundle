@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\Bundle\UnchartedDaemonBundle\DependencyInjection;
+namespace Uncharted\UnchartedDaemonBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

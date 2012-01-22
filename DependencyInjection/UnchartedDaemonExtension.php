@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\Bundle\UnchartedDaemonBundle\DependencyInjection;
+namespace Uncharted\UnchartedDaemonBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\Config\FileLocator;
-use Uncharted\Bundle\UnchartedDaemonBundle\UnchartedDaemonBundleException;
+use Uncharted\UnchartedDaemonBundle\UnchartedDaemonBundleException;
 
 class UnchartedDaemonExtension extends Extension
 {
