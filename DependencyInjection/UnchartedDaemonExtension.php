@@ -18,8 +18,6 @@ class UnchartedDaemonExtension extends Extension
     {
         $processor = new Processor();
         $configuration = new Configuration();
-
-        $config = $processor->processConfiguration($configuration, $configs);
         
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('daemon.xml');
