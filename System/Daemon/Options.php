@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System\Daemon;
+namespace Denofi\DaemonBundle\System\Daemon;
 
 /**
  * Mechanism for validating, getting and setting a predefined set of options.

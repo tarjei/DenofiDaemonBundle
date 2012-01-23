@@ -5,11 +5,11 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="uncharted.daemon.filesystem.class">Symfony\Component\HttpKernel\Util\Filesystem</parameter>
-        <parameter key="uncharted.daemon.class">Uncharted\DaemonBundle\System\Daemon</parameter>
+        <parameter key="denofi.daemon.filesystem.class">Symfony\Component\HttpKernel\Util\Filesystem</parameter>
+        <parameter key="denofi.daemon.class">Denofi\DaemonBundle\System\Daemon</parameter>
     </parameters>
 
     <services>
-        <service id="uncharted.daemon.filesystem" class="%uncharted.daemon.filesystem.class%" />
+        <service id="denofi.daemon.filesystem" class="%denofi.daemon.filesystem.class%" />
     </services>
 </container>

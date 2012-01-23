@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System;
+namespace Denofi\DaemonBundle\System;
 
 /**
  * Daemon turns PHP-CLI scripts into daemons.
@@ -10,7 +10,7 @@ namespace Uncharted\DaemonBundle\System;
  *
  * PHP version 5
  *
- * @category  Uncharted
+ * @category  Denofi
  * @package   DaemonBundle
  * @author    Kevin van Zonneveld <kevin@vanzonneveld.net>
  * @copyright 2008 Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -21,9 +21,9 @@ namespace Uncharted\DaemonBundle\System;
  */
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Uncharted\DaemonBundle\System\Daemon\Exception;
-use Uncharted\DaemonBundle\System\Daemon\Options;
-use Uncharted\DaemonBundle\System\Daemon\OS;
+use Denofi\DaemonBundle\System\Daemon\Exception;
+use Denofi\DaemonBundle\System\Daemon\Options;
+use Denofi\DaemonBundle\System\Daemon\OS;
  
 class SystemDaemon
 {

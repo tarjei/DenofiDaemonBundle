@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System\Daemon\OS;
+namespace Denofi\DaemonBundle\System\Daemon\OS;
 
 /**
  * A System_Daemon_OS driver for Fedora based Operating Systems
@@ -16,7 +16,7 @@ namespace Uncharted\DaemonBundle\System\Daemon\OS;
  * *
  */
 
-use Uncharted\DaemonBundle\System\Daemon\OS\RedHat;
+use Denofi\DaemonBundle\System\Daemon\OS\RedHat;
 
 class Fedora extends RedHat
 {

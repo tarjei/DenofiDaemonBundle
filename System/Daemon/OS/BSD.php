@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System\Daemon\OS;
+namespace Denofi\DaemonBundle\System\Daemon\OS;
 
 /**
  * A System_Daemon_OS driver for BSD
@@ -15,7 +15,7 @@ namespace Uncharted\DaemonBundle\System\Daemon\OS;
  * * 
  */
 
-use Uncharted\DaemonBundle\System\Daemon\OS;
+use Denofi\DaemonBundle\System\Daemon\OS;
  
 class BSD extends OS
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System\Daemon\OS;
+namespace Denofi\DaemonBundle\System\Daemon\OS;
 
 /**
  * An exception thrown by System_Daemon_OS when it encounters an unrecoverable error.

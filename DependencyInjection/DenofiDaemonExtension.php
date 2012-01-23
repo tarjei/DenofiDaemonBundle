@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\DependencyInjection;
+namespace Denofi\DaemonBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -8,9 +8,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\Config\FileLocator;
-use Uncharted\DaemonBundle\UnchartedDaemonBundleException;
+use Denofi\DaemonBundle\DenofiDaemonBundleException;
 
-class UnchartedDaemonExtension extends Extension
+class DenofiDaemonExtension extends Extension
 {
     private $defaultUser = null;
 
@@ -66,7 +66,7 @@ class UnchartedDaemonExtension extends Extension
         //merges each configured daemon with default configs 
         //and makes sure the pid directory is writable
         $cacheDir = $container->getParameter('kernel.cache_dir'); 
-        $filesystem = $container->get('uncharted.daemon.filesystem');
+        $filesystem = $container->get('denofi.daemon.filesystem');
         foreach ($config['daemons'] as $name => $cnf)
         {
             if (NULL == $cnf)
@@ -75,8 +75,8 @@ class UnchartedDaemonExtension extends Extension
             try {
                 $filesystem->mkdir($cacheDir . '/'. $name . '/', 0777);
             }
-            catch (UnchartedDaemonBundleException $e) {
-                echo 'UnchartedDaemonBundle exception: ',  $e->getMessage(), "\n";
+            catch (DenofiDaemonBundleException $e) {
+                echo 'DenofiDaemonBundle exception: ',  $e->getMessage(), "\n";
             }
             
             if (isset($cnf['appUser']) || isset($cnf['appGroup'])) {

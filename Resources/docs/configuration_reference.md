@@ -1,4 +1,4 @@
-UnchartedDaemonBundle Configuration Reference
+DenofiDaemonBundle Configuration Reference
 =============================================
 
 All available configuration options are listed below with their default values.
@@ -26,7 +26,7 @@ please replace `example` below with the name of your daemon.
 ``` yaml
 # app/config/config.yml
 
-uncharted_daemon:
+denofi_daemon:
     daemons:
         example:                                                                #Replace with the name of your daemon
             appName:                example

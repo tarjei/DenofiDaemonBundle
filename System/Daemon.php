@@ -1,15 +1,15 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System;
+namespace Denofi\DaemonBundle\System;
 
-use Uncharted\DaemonBundle\System\SystemDaemon;
-use Uncharted\DaemonBundle\System\DaemonHandlerInterface;
-use Uncharted\DaemonBundle\System\Daemon\Exception as UnchartedDaemonBundleException;
+use Denofi\DaemonBundle\System\SystemDaemon;
+use Denofi\DaemonBundle\System\DaemonHandlerInterface;
+use Denofi\DaemonBundle\System\Daemon\Exception as DenofiDaemonBundleException;
 
 /**
  * Daemon is a php5 wrapper class for the PEAR library System_Daemon
  *
- * @category  Uncharted
+ * @category  Denofi
  * @package   DaemonBundle
  * @author    Jesse Greathouse <jesse.greathouse@gmail.com>
  * @author    Trent Thacker <trent@unchartedcoffee.com>
@@ -29,7 +29,7 @@ class Daemon
             $options = $this->validateOptions($options);
             $this->setConfig($options);
         } else {
-            throw new UnchartedDaemonBundleException('Daemon instantiated without a config');
+            throw new DenofiDaemonBundleException('Daemon instantiated without a config');
         }
     }
 
@@ -41,14 +41,14 @@ class Daemon
     private function validateOptions($options)
     {
         if (null === ($options['appRunAsUID'])) {
-            throw new UnchartedDaemonBundleException('Daemon instantiated without user or group');
+            throw new DenofiDaemonBundleException('Daemon instantiated without user or group');
         }
             
         if (!isset($options['appRunAsGID'])) {
             try {
                 $user = posix_getpwuid($options['appRunAsUID']);
                 $options['appRunAsGID'] = $user['gid'];
-            } catch (UnchartedDaemonBundleException $e) {
+            } catch (DenofiDaemonBundleException $e) {
                 echo 'Exception caught: ',  $e->getMessage(), "\n";
             }
         }

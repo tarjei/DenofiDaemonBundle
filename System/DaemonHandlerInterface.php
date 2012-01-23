@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncharted\DaemonBundle\System;
+namespace Denofi\DaemonBundle\System;
 
 /**
  * DaemonHandlerInterface should be implemented by classes that what to be run
