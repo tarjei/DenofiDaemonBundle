@@ -3,6 +3,7 @@
 namespace Uncharted\DaemonBundle\System;
 
 use Uncharted\DaemonBundle\System\SystemDaemon;
+use Uncharted\DaemonBundle\System\DaemonHandlerInterface;
 use Uncharted\DaemonBundle\System\Daemon\Exception as UnchartedDaemonBundleException;
 
 /**
@@ -31,7 +32,12 @@ class Daemon
             throw new UnchartedDaemonBundleException('Daemon instantiated without a config');
         }
     }
-    
+
+    public function setHandler(DaemonHandlerInterface $handler)
+    {
+        SystemDaemon::setHandler($handler);
+    }
+
     private function validateOptions($options)
     {
         if (null === ($options['appRunAsUID'])) {
@@ -120,8 +126,6 @@ class Daemon
         );
         
         $this->start();
-        
-        
     }
     
     public function iterate($sec) {

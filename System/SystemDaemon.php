@@ -19,7 +19,8 @@ namespace Uncharted\DaemonBundle\System;
  * @link      http://trac.plutonia.nl/projects/System_Daemon
  *
  */
- 
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Uncharted\DaemonBundle\System\Daemon\Exception;
 use Uncharted\DaemonBundle\System\Daemon\Options;
 use Uncharted\DaemonBundle\System\Daemon\OS;
@@ -100,6 +101,7 @@ class SystemDaemon
      */
     static protected $_safeMode = false;
 
+    static protected $_handler;
     /**
      * Available log levels
      *
@@ -435,7 +437,11 @@ class SystemDaemon
 
     }
 
-
+    static public function setHandler(DaemonHandlerInterface $handler)
+    {
+        self::$_handler = $handler;
+        return true;
+    }
 
     /**
      * Autoload static method for loading classes and interfaces.
@@ -584,7 +590,11 @@ class SystemDaemon
         // Become daemon
         self::_summon();
 
-        return true;
+        while (true) {
+            self::$_handler->run();
+            self::notice("Executing Endless loop!");
+            sleep(10);
+        }
 
     }
 
