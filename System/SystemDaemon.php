@@ -623,7 +623,7 @@ class SystemDaemon
      */
     static public function stop()
     {
-        self::info('Stopping {appName}');
+        self::info('Stopping {appName} daemon');
         self::_die(false);
     }
 
@@ -1255,7 +1255,8 @@ class SystemDaemon
             $logLoc = self::opt('logLocation');
         }
 
-        self::notice('Starting {appName} daemon, output in: %s', $logLoc);
+        self::info('Starting {appName} daemon');
+        self::notice('Log output for {appName} located in: %s', $logLoc);
 
         // Allowed?
         if (self::isRunning()) {
