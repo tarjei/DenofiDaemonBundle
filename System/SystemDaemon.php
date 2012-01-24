@@ -1112,7 +1112,7 @@ class SystemDaemon
             // An emergency log entry is reason for the daemon to
             // die immediately, but only if it is the daemon running in the
             //background, active (calling) processes should not die here.
-            if ($level === self::LOG_EMERG && self::isInBackground()) {
+            if ($level === self::LOG_EMERG && self::$_processIsChild) {
                 self::_die();
             }
         }
@@ -1570,6 +1570,13 @@ class SystemDaemon
         }
 
         self::$_isDying = true;
+
+        if (self::$_processIsChild) {
+            self::info(
+                "Daemon creation failed. Terminating daemon process."
+            );
+            die();
+        }
 
         if (!self::isRunning()) {
             self::info(
