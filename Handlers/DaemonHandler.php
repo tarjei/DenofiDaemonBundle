@@ -1,14 +1,15 @@
 <?php
 
-namespace Denofi\DaemonBundle\System;
+namespace Denofi\DaemonBundle\Handlers;
 
+use Denofi\DaemonBundle\System\SystemDaemon;
 /**
- * Class to derive from for creating a class that can be run
- * by a System Daemon.
+ * Abstract class that can be derived to create a class that
+ * can be run by a System Daemon.
  *
  * @author Trent Thacker <trent@unchartedcoffee.com>
  */
-class DaemonHandler
+abstract class DaemonHandler
 {
     /**
      * Logging shortcut, will log as an
@@ -88,14 +89,12 @@ class DaemonHandler
     }
 
     /**
-     * Method run by the daemon. Should be overwritten by a child class or the
-     * daemon will be stuck doing nothing for all eternity...Muhahahahha.
-     *
-     * Unless that's the goal, of course, cruel person you.
-     * Daemons have feelings too, you know. :-P
+     * Method run by the daemon.
      */
-    public function run()
-    {
-        //Do nothing
-    }
+    abstract function start();
+
+    /**
+     * Method run by the start method.
+     */
+    abstract function run();
 }

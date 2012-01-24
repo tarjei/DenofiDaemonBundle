@@ -24,6 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Denofi\DaemonBundle\System\Daemon\Exception;
 use Denofi\DaemonBundle\System\Daemon\Options;
 use Denofi\DaemonBundle\System\Daemon\OS;
+use Denofi\DaemonBundle\Handlers\DaemonHandler;
  
 class SystemDaemon
 {
@@ -100,6 +101,9 @@ class SystemDaemon
     static protected $_safeMode = false;
 
     static protected $_handler;
+
+    static protected $_interval = 2;
+
     /**
      * Available log levels
      *
@@ -465,7 +469,6 @@ class SystemDaemon
         }
     }
 
-
     /**
      * Spawn daemon process.
      *
@@ -587,10 +590,7 @@ class SystemDaemon
             return true;
 
         //Child process runs this nice little infinite loop, till ruthlessly slaughtered.
-        while (true) {
-            self::$_handler->run();
-            sleep(30);
-        }
+        self::$_handler->start();
     }
 
     /**
@@ -603,8 +603,11 @@ class SystemDaemon
      * @see start()
      * @see stop()
      */
-    static public function iterate($sleepSeconds = 0)
+    static public function iterate($sleepSeconds = -1)
     {
+        if ($sleepSeconds < 0)
+            $sleepSeconds = self::$_interval;
+
         self::_optionObjSetup();
         if ($sleepSeconds !== 0) {
             usleep($sleepSeconds*1000000);
@@ -661,6 +664,16 @@ class SystemDaemon
     {
         self::$_handler = $handler;
         return true;
+    }
+
+    static public function setInterval($interval)
+    {
+        self::$_interval = $interval;
+    }
+
+    static public function getInterval()
+    {
+        return self::$_interval;
     }
 
     /**

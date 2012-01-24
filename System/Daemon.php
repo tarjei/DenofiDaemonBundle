@@ -3,7 +3,8 @@
 namespace Denofi\DaemonBundle\System;
 
 use Denofi\DaemonBundle\System\SystemDaemon;
-use Denofi\DaemonBundle\System\DaemonHandler;
+use Denofi\DaemonBundle\Handlers\DaemonHandler;
+use Denofi\DaemonBundle\Handlers\TimedDaemonHandler;
 use Denofi\DaemonBundle\System\Daemon\Exception as DenofiDaemonBundleException;
 
 /**
@@ -36,7 +37,7 @@ class Daemon
         if ($handler != null)
             $this->_handler = $handler;
         else
-            $this->_handler = new DaemonHandler();
+            $this->_handler = new TimedDaemonHandler();
 
         $this->_interval = $interval;
     }
@@ -105,6 +106,7 @@ class Daemon
     {
         SystemDaemon::setOptions($this->getConfig());
         SystemDaemon::setHandler($this->_handler);
+        SystemDaemon::setInterval($this->_interval);
         
         SystemDaemon::start();
         
