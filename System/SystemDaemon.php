@@ -582,6 +582,11 @@ class SystemDaemon
         // Become daemon
         self::_summon();
 
+        //Parent (the calling process) returns here.
+        if (!self::$_processIsChild)
+            return true;
+
+        //Child process runs this nice little infinite loop, till ruthlessly slaughtered.
         while (true) {
             self::$_handler->run();
             sleep(30);
@@ -623,7 +628,7 @@ class SystemDaemon
      */
     static public function stop()
     {
-        self::info('Stopping {appName} daemon');
+        self::info('Stopping {appName} daemon.');
         self::_die(false);
     }
 
@@ -1091,9 +1096,10 @@ class SystemDaemon
 
         // These are pretty serious errors
         if ($level < self::LOG_ERR) {
-            // An emergency logentry is reason for the deamon to
-            // die immediately
-            if ($level === self::LOG_EMERG) {
+            // An emergency log entry is reason for the daemon to
+            // die immediately, but only if it is the daemon running in the
+            //background, active (calling) processes should not die here.
+            if ($level === self::LOG_EMERG && self::isInBackground()) {
                 self::_die();
             }
         }
@@ -1240,8 +1246,6 @@ class SystemDaemon
         return true;
     }
 
-
-
     /**
      * Put the running script in background
      *
@@ -1260,7 +1264,7 @@ class SystemDaemon
 
         // Allowed?
         if (self::isRunning()) {
-            return self::emerg('{appName} daemon is still running. Exiting');
+            return self::emerg('{appName} daemon is still running. Cancelling.');
         }
 
         // Reset Process Information
@@ -1272,6 +1276,12 @@ class SystemDaemon
         if (!self::_fork()) {
             return self::emerg('Unable to fork');
         }
+
+        //Parent (calling application returns here)
+        if (!self::$_processIsChild)
+            return true;
+
+        //And the child process (the daemon) continues on.
 
         // Additional PID succeeded check
         if (!is_numeric(self::$_processId) || self::$_processId < 1) {
@@ -1504,16 +1514,14 @@ class SystemDaemon
      */
     static protected function _fork()
     {
-        self::debug('forking {appName} daemon');
+        self::debug('Forking {appName} daemon.');
         $pid = pcntl_fork();
         if ($pid === -1) {
             // Error
-            return self::warning('Process could not be forked');
+            return self::warning('Process could not be forked.');
         } else if ($pid) {
-            // Parent
-            self::debug('Ending {appName} parent process');
-            // Die without attracting attention
-            exit();
+            // Parent returns so it can continue doing what it was doing.
+            return true;
         } else {
             // Child
             self::$_processIsChild = true;
@@ -1552,9 +1560,9 @@ class SystemDaemon
 
         if (!self::isRunning()) {
             self::info(
-                'Process was not daemonized, just halting current process'
+                'Process was not daemonized, nothing to do.'
             );
-            die();
+            return;
         }
 
         $pid = file_get_contents(
@@ -1564,9 +1572,9 @@ class SystemDaemon
         @unlink(self::opt('appPidLocation'));
 
         self::info(
-            "Terminating daemonized process $pid"
+            "Terminating daemonized process $pid."
         );
-        passthru('kill -15 ' . $pid);
+        passthru('kill -9 ' . $pid);
     }
 
     /**

@@ -105,11 +105,8 @@ class Daemon
     {
         SystemDaemon::setOptions($this->getConfig());
         SystemDaemon::setHandler($this->_handler);
-        SystemDaemon::start();
         
-        SystemDaemon::info('{appName} System Daemon Started at %s',
-            date("F j, Y, g:i a")
-        );
+        SystemDaemon::start();
         
         $this->setPid($this->getPid());
     }
@@ -128,9 +125,7 @@ class Daemon
                 exec("ps ax | awk '{print $1}'", $pids);
             }
 
-            SystemDaemon::info('{appName} System Daemon flagged for restart at %s',
-                date("F j, Y, g:i a")
-            );
+            SystemDaemon::info('{appName} System Daemon flagged for restart.');
         }
         else {
             SystemDaemon::info('{appName} daemon not found. Skipping shutdown.');
