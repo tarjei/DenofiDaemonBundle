@@ -70,8 +70,6 @@ class SystemDaemon
      */
     const LOG_DEBUG = 7;
 
-
-
     /**
      * The current process identifier
      *
@@ -437,12 +435,6 @@ class SystemDaemon
 
     }
 
-    static public function setHandler(DaemonHandlerInterface $handler)
-    {
-        self::$_handler = $handler;
-        return true;
-    }
-
     /**
      * Autoload static method for loading classes and interfaces.
      * Code from the PHP_CodeSniffer package by Greg Sherwood and
@@ -592,10 +584,8 @@ class SystemDaemon
 
         while (true) {
             self::$_handler->run();
-            self::notice("Executing Endless loop!");
-            sleep(10);
+            sleep(30);
         }
-
     }
 
     /**
@@ -638,18 +628,6 @@ class SystemDaemon
     }
 
     /**
-     * Restart daemon process.
-     *
-     * @return void
-     * @see _die()
-     */
-    static public function restart()
-    {
-        self::info('Restarting {appName}');
-        self::_die(true);
-    }
-
-    /**
      * Overrule or add signal handlers.
      *
      * @param string $signal  Signal constant (e.g. SIGHUP)
@@ -671,6 +649,12 @@ class SystemDaemon
 
         // Overwrite on existance
         self::$_sigHandlers[$signal] = $handler;
+        return true;
+    }
+
+    static public function setHandler(DaemonHandler $handler)
+    {
+        self::$_handler = $handler;
         return true;
     }
 
@@ -1557,37 +1541,32 @@ class SystemDaemon
      *
      * @return void
      */
-    static protected function _die($restart = false)
+    static protected function _die()
     {
         if (self::isDying()) {
             return null;
         }
 
         self::$_isDying = true;
-        // Following caused a bug if pid couldn't be written because of
-        // privileges
-        // || !file_exists(self::opt('appPidLocation'))
-        if (!self::isInBackground()) {
+
+        if (!self::isRunning()) {
             self::info(
-                'halting current process'
+                'Process was not daemonized, just halting current process'
             );
             die();
         }
 
         $pid = file_get_contents(
-            Daemon::getOption('appPidLocation')
+            SystemDaemon::getOption('appPidLocation')
         );
+
         @unlink(self::opt('appPidLocation'));
 
-        if ($restart) {
-            // So instead we should:
-            die(exec(join(' ', $GLOBALS['argv']) . ' > /dev/null &'));
-        } else {
-            passthru('kill -9 ' . $pid);
-            die();
-        }
+        self::info(
+            "Terminating daemonized process $pid"
+        );
+        passthru('kill -15 ' . $pid);
     }
-
 
     /**
      * Sets up OS instance

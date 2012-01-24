@@ -3,7 +3,7 @@
 namespace Denofi\DaemonBundle\System;
 
 use Denofi\DaemonBundle\System\SystemDaemon;
-use Denofi\DaemonBundle\System\DaemonHandlerInterface;
+use Denofi\DaemonBundle\System\DaemonHandler;
 use Denofi\DaemonBundle\System\Daemon\Exception as DenofiDaemonBundleException;
 
 /**
@@ -21,9 +21,10 @@ class Daemon
 {
     private $_config = array();
     private $_pid;
-    private $_interval = 2;
+    private $_interval;
+    private $_handler;
     
-    public function __construct($options) 
+    public function __construct(array $options, DaemonHandler $handler = null, $interval = 2)
     {
         if (!empty($options)) {
             $options = $this->validateOptions($options);
@@ -31,11 +32,18 @@ class Daemon
         } else {
             throw new DenofiDaemonBundleException('Daemon instantiated without a config');
         }
+
+        if ($handler != null)
+            $this->_handler = $handler;
+        else
+            $this->_handler = new DaemonHandler();
+
+        $this->_interval = $interval;
     }
 
-    public function setHandler(DaemonHandlerInterface $handler)
+    public function setHandler(DaemonHandler $handler)
     {
-        SystemDaemon::setHandler($handler);
+        $this->_handler = $handler;
     }
 
     private function validateOptions($options)
@@ -71,7 +79,6 @@ class Daemon
         } else {
             return null;
         }
-        
     }
     
     public function setPid($pid)
@@ -97,6 +104,7 @@ class Daemon
     public function start()
     {
         SystemDaemon::setOptions($this->getConfig());
+        SystemDaemon::setHandler($this->_handler);
         SystemDaemon::start();
         
         SystemDaemon::info('{appName} System Daemon Started at %s',
@@ -104,27 +112,31 @@ class Daemon
         );
         
         $this->setPid($this->getPid());
-        
     }
     
     public function reStart()
     {
-        SystemDaemon::setOptions($this->getConfig());
-        $pid = $this->getPid();
-        SystemDaemon::info('{appName} System Daemon flagged for restart at %s',
-            date("F j, Y, g:i a")
-        );
-        $this->stop();
-        exec("ps ax | awk '{print $1}'", $pids);
-        while(in_array($pid, $pids, true)) {
-            unset($pids);
+        if ($this->isRunning()) {
+            $pid = $this->getPid();
+
+            $this->stop();
+
             exec("ps ax | awk '{print $1}'", $pids);
-            $this->iterate(5);
+            while(in_array($pid, $pids, true)) {
+                unset($pids);
+                sleep(1);
+                exec("ps ax | awk '{print $1}'", $pids);
+            }
+
+            SystemDaemon::info('{appName} System Daemon flagged for restart at %s',
+                date("F j, Y, g:i a")
+            );
         }
-        SystemDaemon::info('{appName} System Daemon Started at %s',
-            date("F j, Y, g:i a")
-        );
-        
+        else {
+            SystemDaemon::info('{appName} daemon not found. Skipping shutdown.');
+        }
+
+        SystemDaemon::setHandler($this->_handler);
         $this->start();
     }
     
@@ -134,25 +146,13 @@ class Daemon
     
     public function isRunning() 
     {
-        if (!SystemDaemon::isDying() && $this->_pid != null && $this->_pid == $this->getPid()) {
-            SystemDaemon::iterate($this->_interval);
-            return true;
-        } else {
-            return false;
-        }
+        SystemDaemon::setOptions($this->getConfig());
+        return !SystemDaemon::isDying() && SystemDaemon::isRunning();
     }
     
     public function stop()
     {
-        if (file_exists($this->_config['appPidLocation'])) {
-            unlink($this->_config['appPidLocation']);
-            SystemDaemon::info('{appName} System Daemon Terminated at %s',
-                date("F j, Y, g:i a")
-            );
-        } else {
-            SystemDaemon::info('{appName} System Daemon Stop flag sent at %s',
-                date("F j, Y, g:i a")
-            );
-        }
+        SystemDaemon::setOptions($this->getConfig());
+        SystemDaemon::stop();
     }
 }

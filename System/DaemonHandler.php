@@ -10,10 +10,13 @@ namespace Denofi\DaemonBundle\System;
  *
  * @api
  */
-interface DaemonHandlerInterface
+class DaemonHandler
 {
     /**
      * Runs the handler
      */
-    public function run();
+    public function run()
+    {
+        //Do nothing
+    }
 }
