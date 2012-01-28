@@ -67,6 +67,9 @@ class DenofiDaemonExtension extends Extension
         //and makes sure the pid directory is writable
         $cacheDir = $container->getParameter('kernel.cache_dir'); 
         $filesystem = $container->get('denofi.daemon.filesystem');
+
+        if (!$config || !$config['daemons']) return;
+
         foreach ($config['daemons'] as $name => $cnf)
         {
             if (NULL == $cnf)
