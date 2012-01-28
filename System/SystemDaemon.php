@@ -226,6 +226,22 @@ class SystemDaemon
             'required' => true
         ),
 
+        'startCommand' => array(
+            'type' => 'string',
+            'default' => 'start',
+            'punch' => 'Symfony2 command-line command to start the daemon.',
+            'example' => 'example:start => \'start\'',
+            'detail' => 'Required for forging init.d script',
+        ),
+
+        'stopCommand' => array(
+            'type' => 'string',
+            'default' => 'stop',
+            'punch' => 'Symfony2 command-line command to stop the daemon.',
+            'example' => 'example:stop => \'stop\'',
+            'detail' => 'Required for forging init.d script',
+        ),
+
         'logVerbosity' => array(
             'type' => 'number/0-7',
             'default' => self::LOG_INFO,
@@ -728,7 +744,6 @@ class SystemDaemon
         }
     }
 
-
     /**
      * Gets any option found in $_optionDefinitions
      * Public interface to talk with with protected option methods
@@ -1131,11 +1146,13 @@ class SystemDaemon
     {
         // Init Options (needed for properties of init.d script)
         if (false === self::_optionsInit(false)) {
+            self::info('Missing required properties for the init.d script');
             return false;
         }
 
         // Init OS Object
         if (!self::_osObjSetup()) {
+            self::info('Unable to initialize OS object, operating system may be unsupported.');
             return false;
         }
 
@@ -1154,13 +1171,67 @@ class SystemDaemon
         }
 
         if ($res === true) {
-            self::notice('Startup was already written');
+            self::notice('Startup script has already been written.');
             return true;
         } else {
             self::notice('Startup written to %s', $res);
         }
 
+        self::$_osObj->errors = array();
+
+        $aut = self::$_osObj->addToSystemStartup($options);
+        if (false === $aut) {
+            if (is_array(self::$_osObj->errors)) {
+                foreach (self::$_osObj->errors as $error) {
+                    self::notice($error);
+                }
+            }
+            return self::warning('Unable to add startup file to boot script');
+        }
+
+        self::notice('Startup was added to the boot script.');
+
         return $res;
+    }
+
+    static public function deleteAutoRun()
+    {
+        // Init OS Object
+        if (!self::_osObjSetup()) {
+            self::info('Unable to initialize OS object, operating system may be unsupported.');
+            return false;
+        }
+
+        // Get daemon properties
+        $options = self::getOptions();
+
+        // Try to remove the init.d script
+        $res = self::$_osObj->deleteAutoRun($options);
+        if (!$res) {
+            if (is_array(self::$_osObj->errors)) {
+                foreach (self::$_osObj->errors as $error) {
+                    self::notice($error);
+                }
+                self::$_osObj->errors = array();
+            }
+            return self::warning('Unable to remove startup file');
+        }
+
+        self::notice('Startup file has been removed.');
+
+        $res = self::$_osObj->removeFromSystemStartup($options);
+        if (false === $res) {
+            if (is_array(self::$_osObj->errors)) {
+                foreach (self::$_osObj->errors as $error) {
+                    self::notice($error);
+                }
+            }
+            return self::warning('Unable to remove startup file to boot script.');
+        }
+
+        self::notice('Startup file was removed to the boot script.');
+
+        return true;
     }
 
     /**
@@ -1611,7 +1682,9 @@ class SystemDaemon
 
         // Still false? This was an error!
         if (!self::$_osObj) {
-            return self::emerg('Unable to setup OS object');
+            self::emerg('Unable to setup OS object');
+            self::info(OS::$error);
+            return false;
         }
 
         return true;

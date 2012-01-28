@@ -136,8 +136,27 @@ class Daemon
         SystemDaemon::setHandler($this->_handler);
         $this->start();
     }
+
+    public function stop()
+    {
+        SystemDaemon::setOptions($this->getConfig());
+        SystemDaemon::stop();
+    }
+
+    public function enableAutorun($overwrite = false)
+    {
+        SystemDaemon::setOptions($this->getConfig());
+        SystemDaemon::writeAutoRun($overwrite);
+    }
+
+    public function disableAutorun()
+    {
+        SystemDaemon::setOptions($this->getConfig());
+        SystemDaemon::deleteAutoRun();
+    }
     
-    public function iterate($sec) {
+    public function iterate($sec)
+    {
         SystemDaemon::iterate($sec);
     }
     
@@ -145,11 +164,5 @@ class Daemon
     {
         SystemDaemon::setOptions($this->getConfig());
         return !SystemDaemon::isDying() && SystemDaemon::isRunning();
-    }
-    
-    public function stop()
-    {
-        SystemDaemon::setOptions($this->getConfig());
-        SystemDaemon::stop();
     }
 }

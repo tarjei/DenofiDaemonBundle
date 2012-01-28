@@ -48,6 +48,25 @@ class Debian extends Linux
         '@bin_name@'     => '{PROPERTIES.appExecutable}',
         '@pid_file@'     => '{PROPERTIES.appPidLocation}',
         '@chkconfig@'    => '{PROPERTIES.appChkConfig}',
+        '@start_cmd@'    => '{PROPERTIES.appName}:{PROPERTIES.startCommand}',
+        '@stop_cmd@'     => '{PROPERTIES.appName}:{PROPERTIES.stopCommand}',
     );
-    
+
+    public function addToSystemStartup($properties)
+    {
+        $message = exec("update-rc.d ". $properties["appName"] ." defaults");
+        $result = intval(exec("echo $?"));
+
+        if ($result) $this->errors[] = $message;
+
+        return $result;
+    }
+
+    public function removeFromSystemStartup($properties)
+    {
+        exec("update-rc.d -f ". $properties["appName"] ." remove\n");
+        $result = intval(exec("echo $?"));
+
+        return $result;
+    }
 }
