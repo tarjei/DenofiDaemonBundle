@@ -8,13 +8,15 @@
 # pidfile: @pid_file@
 PID_FILE=@pid_file@
 BIN_FILE=@bin_file@
+DAEMON_START_CMD=@start_cmd@
+DAEMON_STOP_CMD=@stop_cmd@
 
 
 # Source function library.
 . /etc/rc.d/init.d/functions
 
 start() {
-    ${BIN_FILE}
+    ${BIN_FILE} ${DAEMON_START_CMD}
     ret=$?
     if [ $ret -eq 0 ]; then
         action $"Starting @name@: " /bin/true

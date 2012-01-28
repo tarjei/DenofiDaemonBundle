@@ -56,6 +56,7 @@ class RedHat extends Linux
         '@bin_name@'     => '{PROPERTIES.appExecutable}',
         '@pid_file@'     => '{PROPERTIES.appPidLocation}',
         '@chkconfig@'    => '{PROPERTIES.appChkConfig}',
+        '@start_cmd@'    => '{PROPERTIES.appName}:{PROPERTIES.startCommand}',
     );
 
 }

@@ -1167,7 +1167,7 @@ class SystemDaemon
                     self::notice($error);
                 }
             }
-            return self::warning('Unable to create startup file');
+            return self::warning('Unable to create startup file. Are you running as sudo?');
         }
 
         if ($res === true) {
@@ -1642,10 +1642,16 @@ class SystemDaemon
 
         self::$_isDying = true;
 
+        //This runs if the daemon (child) process gets the
+        //kill command
         if (self::$_processIsChild) {
             self::info(
-                "Daemon creation failed. Terminating daemon process."
+                "Terminating daemon process."
             );
+
+            //Remove the PID if it exists.
+            @unlink(self::opt('appPidLocation'));
+
             die();
         }
 
