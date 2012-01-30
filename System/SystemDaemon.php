@@ -1205,6 +1205,18 @@ class SystemDaemon
         // Get daemon properties
         $options = self::getOptions();
 
+        $res = self::$_osObj->removeFromSystemStartup($options);
+        if (false === $res) {
+            if (is_array(self::$_osObj->errors)) {
+                foreach (self::$_osObj->errors as $error) {
+                    self::notice($error);
+                }
+            }
+            return self::warning('Unable to remove startup file to boot script.');
+        }
+
+        self::notice('Startup file was removed to the boot script.');
+
         // Try to remove the init.d script
         $res = self::$_osObj->deleteAutoRun($options);
         if (!$res) {
@@ -1218,18 +1230,6 @@ class SystemDaemon
         }
 
         self::notice('Startup file has been removed.');
-
-        $res = self::$_osObj->removeFromSystemStartup($options);
-        if (false === $res) {
-            if (is_array(self::$_osObj->errors)) {
-                foreach (self::$_osObj->errors as $error) {
-                    self::notice($error);
-                }
-            }
-            return self::warning('Unable to remove startup file to boot script.');
-        }
-
-        self::notice('Startup file was removed to the boot script.');
 
         return true;
     }
