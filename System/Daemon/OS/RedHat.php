@@ -59,4 +59,22 @@ class RedHat extends Linux
         '@start_cmd@'    => '{PROPERTIES.appName}:{PROPERTIES.startCommand}',
     );
 
+    public function addToSystemStartup($properties)
+    {
+        $message = exec("sudo /sbin/chkconfig --levels 2345 ". $properties["appName"] ." on\n");
+        $result = intval(exec("echo $?"));
+
+        if ($result) $this->errors[] = $message;
+
+        return $result;
+    }
+
+    public function removeFromSystemStartup($properties)
+    {
+        exec("/sbin/chkconfig --del ". $properties["appName"] ."\n");
+        $result = intval(exec("echo $?"));
+
+        return $result;
+    }
+
 }
