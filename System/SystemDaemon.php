@@ -1144,6 +1144,11 @@ class SystemDaemon
      */
     static public function writeAutoRun($overwrite=false)
     {
+        //Check that they are running as root.
+        if (exec("whoami") != 'root') {
+            return self::warning('This command requires root privileges.');
+        }
+
         // Init Options (needed for properties of init.d script)
         if (false === self::_optionsInit(false)) {
             self::info('Missing required properties for the init.d script');
@@ -1156,6 +1161,7 @@ class SystemDaemon
             return false;
         }
 
+
         // Get daemon properties
         $options = self::getOptions();
 
@@ -1167,7 +1173,7 @@ class SystemDaemon
                     self::notice($error);
                 }
             }
-            return self::warning('Unable to create startup file. Are you running as sudo?');
+            return self::warning('Unable to create startup file.');
         }
 
         if ($res === true) {
@@ -1196,6 +1202,11 @@ class SystemDaemon
 
     static public function deleteAutoRun()
     {
+        //Check that they are running as root.
+        if (exec("whoami") != 'root') {
+            return self::warning('This command requires root privileges.');
+        }
+
         // Init OS Object
         if (!self::_osObjSetup()) {
             self::info('Unable to initialize OS object, operating system may be unsupported.');
