@@ -436,19 +436,29 @@ class OS
             return true;
         }
 
+        $fileowner = posix_getpwuid(fileowner($path));
+
         // Write
         if (!file_put_contents($path, $body)) {
-            $this->errors[] =  "startup file: '".
-            $path."' cannot be ".
-                "written to. Check the permissions";
+            $this->errors[] =  "startup file: '$path' cannot be written to, be sure to run as user '".$fileowner['name']."' or as root.";
             return false;
         }
 
         // Chmod
-        if (!chmod($path, 0777)) {
-            $this->errors[] =  "startup file: '".
-            $path."' cannot be ".
-                "chmodded. Check the permissions";
+        if (!@chmod($path, 0777)) {
+            $this->errors[] =  "Startup file: '$path' cannot be chmodded, be sure to run as user '".$fileowner['name']."' or as root.";
+            return false;
+        }
+
+        // Change owner
+        if (!@chown($path, $properties['appUser'])) {
+            $this->errors[] =  "Startup file: '$path' cannot change owner, be sure to run as user '".$fileowner['name']."' or as root.";
+            return false;
+        }
+
+        //Change group
+        if (!@chgrp($path, $properties['appGroup'])) {
+            $this->errors[] =  "Startup file: '$path' cannot change group, be sure to run as user '".$fileowner['name']."' or as root.";
             return false;
         }
 

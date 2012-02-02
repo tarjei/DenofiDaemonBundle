@@ -1098,9 +1098,12 @@ class SystemDaemon
                 'a logLocation');
         }
 
-        // 'Touch' logfile
+        // 'Touch' logfile and change permissions
         if (!file_exists(self::opt('logLocation'))) {
             file_put_contents(self::opt('logLocation'), '');
+
+            @chown(self::opt('logLocation'), self::opt('appUser'));
+            @chgrp(self::opt('logLocation'), self::opt('appGroup'));
         }
 
         // Not writable even after touch? Allowed to echo again!!
@@ -1146,7 +1149,7 @@ class SystemDaemon
     {
         //Check that they are running as root.
         if (exec("whoami") != 'root') {
-            return self::warning('This command requires root privileges.');
+            return self::crit('This command requires root privileges.');
         }
 
         // Init Options (needed for properties of init.d script)
@@ -1328,17 +1331,21 @@ class SystemDaemon
             return false;
         }
 
-        // Ping app
-        if (!posix_kill(intval($pid), 0)) {
-            // Not responding so unlink pidfile
-            @unlink($appPidLocation);
-            return self::warning(
-                'Orphaned pidfile found and removed: ' .
-                '{appPidLocation}. Previous process crashed?'
-            );
+        //check that the app is running.
+        exec("ps $pid", $output, $result);
+
+        if(count($output) >= 2){
+            return true;
         }
 
-        return true;
+        //Not running so unlink pidfile
+        if (@unlink($appPidLocation)) {
+            return self::warning('Orphaned pidfile found and removed: {appPidLocation}. Previous process crashed?');
+        }
+        else {
+            return self::warning('Orphaned pidfile found but unable to remove: {appPidLocation}. Previous process crashed?');
+        }
+        return false;
     }
 
     /**
@@ -1357,9 +1364,28 @@ class SystemDaemon
         self::info('Starting {appName} daemon');
         self::notice('Log output for {appName} located in: %s', $logLoc);
 
-        // Allowed?
-        if (self::isRunning()) {
+        // Cancel if running as this user or another
+        if (self::isRunning() || file_exists(self::opt('appPidLocation'))) {
             return self::emerg('{appName} daemon is still running. Cancelling.');
+        }
+
+        $pidDir = dirname(self::opt('appPidLocation'));
+        self::info($pidDir);
+
+        //Create it if it doesn't exist yet.
+        if (!is_dir($pidDir)) {
+            if (!self::_mkdirr($pidDir, 0777)) {
+                $count = 0;
+                while (!is_Dir($pidDir) && $count++ < 10) $pidDir = dirname($pidDir);
+                $fileowner = posix_getpwuid(fileowner($pidDir));
+                return self::emerg("Cannot create PID folder, be sure to run as user '".$fileowner['name']."' or as root.");
+            }
+        }
+
+        //Check that the appPidLocation can be written to.
+        if(!is_writable($pidDir)) {
+            $fileowner = posix_getpwuid(fileowner($pidDir));
+            return self::emerg("Cannot write to PID folder, be sure to run as user '".$fileowner['name']."' or as root.");
         }
 
         // Reset Process Information
@@ -1392,20 +1418,6 @@ class SystemDaemon
             return self::emerg('Unable to write pid file {appPidLocation}');
         }
 
-        // Change identity. maybe
-        if (0 === exec("id -u")) {
-            $c = self::_changeIdentity(
-                self::opt('appRunAsGID'),
-                self::opt('appRunAsUID')
-                );
-            if (false === $c) {
-                self::crit('Unable to change identity');
-                if (self::opt('appDieOnIdentityCrisis')) {
-                    self::emerg('Cannot continue after this');
-                }
-            }
-        }
-
         // Important for daemons
         // See http://www.php.net/manual/en/function.pcntl-signal.php
         declare(ticks = 1);
@@ -1415,17 +1427,10 @@ class SystemDaemon
         // setSigHandler()
         foreach (self::$_sigHandlers as $signal => $handler) {
             if (!is_callable($handler) && $handler != SIG_IGN && $handler != SIG_DFL) {
-                return self::emerg(
-                    'You want to assign signal %s to handler %s but ' .
-                    'it\'s not callable',
-                    $signal,
-                    $handler
-                );
-            } else if (!pcntl_signal($signal, $handler)) {
-                return self::emerg(
-                    'Unable to reroute signal handler: %s',
-                    $signal
-                );
+                return self::emerg("You want to assign signal $signal to handler $handler but it's not callable");
+            }
+            else if (!pcntl_signal($signal, $handler)) {
+                return self::emerg("Unable to reroute signal handler: $signal");
             }
         }
 
@@ -1496,6 +1501,15 @@ class SystemDaemon
             return self::err('Unable to chmod pidfile: %s', $pidFilePath);;
         }
 
+        if (!chown($pidFilePath, self::opt('appUser'))) {
+            return self::notice('Unable to chown pidfile: %s to %s', $pidFilePath, self::opt('appUser'));
+        }
+
+        if (!chgrp($pidFilePath, self::opt('appGroup'))) {
+            return self::notice('Unable to chgrp pidfile: %s to %s', $pidFilePath, self::opt('appGroup'));
+        }
+        self::info('Changed pid file to %s:%s', self::opt('appUser'), self::opt('appGroup'));
+
         return true;
     }
 
@@ -1517,7 +1531,8 @@ class SystemDaemon
     }
 
     /**
-     * Recursive alternative to mkdir
+     * Recursive alternative to mkdir, also changes
+     * user permissions on the files
      *
      * @param string  $dirPath Directory to create
      * @param integer $mode    Umask
@@ -1526,80 +1541,18 @@ class SystemDaemon
      */
     static protected function _mkdirr($dirPath, $mode)
     {
-        is_dir(dirname($dirPath)) || self::_mkdirr(dirname($dirPath), $mode);
-        return is_dir($dirPath) || @mkdir($dirPath, $mode);
-    }
+        if (!is_dir(dirname($dirPath)))
+            self::_mkdirr(dirname($dirPath), $mode);
 
-    /**
-     * Change identity of process & resources if needed.
-     *
-     * @param integer $gid Group identifier (number)
-     * @param integer $uid User identifier (number)
-     *
-     * @return boolean
-     */
-    static protected function _changeIdentity($gid = 0, $uid = 0)
-    {
-        // What files need to be chowned?
-        $chownFiles = array();
-        if (self::_isValidPidLocation(self::opt('appPidLocation'), true)) {
-            $chownFiles[] = dirname(self::opt('appPidLocation'));
-        }
-        $chownFiles[] = self::opt('appPidLocation');
-        if (!is_object(self::opt('usePEARLogInstance'))) {
-            $chownFiles[] = self::opt('logLocation');
+        if (!is_dir($dirPath)) {
+            if (!@mkdir($dirPath, $mode))
+                return false;
+
+            @chown($dirPath, self::opt('appUser'));
+            @chgrp($dirPath, self::opt('appGroup'));
         }
 
-        // Chown pid- & log file
-        // We have to change owner in case of identity change.
-        // This way we can modify the files even after we're not root anymore
-        foreach ($chownFiles as $filePath) {
-            // Change File GID
-            $doGid = (filegroup($filePath) != $gid ? $gid : false);
-            if (false !== $doGid && !@chgrp($filePath, intval($gid))) {
-                return self::err(
-                    'Unable to change group of file %s to %s',
-                    $filePath,
-                    $gid
-                );
-            }
-
-            // Change File UID
-            $doUid = (fileowner($filePath) != $uid ? $uid : false);
-            if (false !== $doUid && !@chown($filePath, intval($uid))) {
-                return self::err(
-                    'Unable to change user of file %s to %s',
-                    $filePath,
-                    $uid
-                );
-            }
-
-			// Export correct homedir
-			if (($info = posix_getpwuid($uid)) && is_dir($info['dir'])) {
-				system('export HOME="' . $info['dir'] . '"');
-			}
-        }
-
-        // Change Process GID
-        $doGid = (posix_getgid() !== $gid ? $gid : false);
-        if (false !== $doGid && !@posix_setgid($gid)) {
-            return self::err('Unable to change group of process to %s', $gid);
-        }
-
-        // Change Process UID
-        $doUid = (posix_getuid() !== $uid ? $uid : false);
-        if (false !== $doUid && !@posix_setuid($uid)) {
-            return self::err('Unable to change user of process to %s', $uid);
-        }
-
-        $group = posix_getgrgid($gid);
-        $user  = posix_getpwuid($uid);
-
-        return self::info(
-            'Changed identify to %s:%s',
-            $group['name'],
-            $user['name']
-        );
+        return true;
     }
 
     /**
@@ -1622,6 +1575,11 @@ class SystemDaemon
             self::$_processIsChild = true;
             self::$_isDying        = false;
             self::$_processId      = posix_getpid();
+
+            //Try to set the UID and GID (if was run as root)
+            @posix_setgid(self::opt('appRunAsGID'));
+            @posix_setuid(self::opt('appRunAsUID'));
+
             return true;
         }
     }
@@ -1648,6 +1606,7 @@ class SystemDaemon
     static protected function _die()
     {
         if (self::isDying()) {
+            self::info("Process already in its death throes, no need to kill it again.");
             return null;
         }
 
@@ -1656,33 +1615,43 @@ class SystemDaemon
         //This runs if the daemon (child) process gets the
         //kill command
         if (self::$_processIsChild) {
-            self::info(
-                "Terminating daemon process."
-            );
+            self::info("Terminating daemon process.");
 
             //Remove the PID if it exists.
-            @unlink(self::opt('appPidLocation'));
+            if (!@unlink(self::opt('appPidLocation'))) {
+                self::warning("Unable to unlink pid, cancelling shutdown process.");
+                return;
+            }
 
             die();
         }
 
         if (!self::isRunning()) {
-            self::info(
-                'Process was not daemonized, nothing to do.'
-            );
+            if (file_exists(self::opt('appPidLocation'))) {
+                $fileowner = posix_getpwuid(fileowner(self::opt('appPidLocation')));
+                self::info("Process was not accessable, be sure to run as user '".$fileowner['name']."' or as root.");
+                return;
+            }
+
+            self::info('Process was not daemonized, nothing to do.');
             return;
         }
 
-        $pid = file_get_contents(
-            SystemDaemon::getOption('appPidLocation')
-        );
+        $pid = file_get_contents(SystemDaemon::getOption('appPidLocation'));
 
-        @unlink(self::opt('appPidLocation'));
-
-        self::info(
-            "Terminating daemonized process $pid."
-        );
-        passthru('kill -9 ' . $pid);
+        //Attempt to kill the process, only remove the PID file if successful.
+        //May fail if running as a different user.
+        $result = posix_kill($pid, SIGKILL);
+        
+        if($result) {
+            self::info("Terminating daemonized process $pid.");
+            @unlink(self::opt('appPidLocation'));
+        }
+        else
+        {
+            $fileowner = posix_getpwuid(fileowner(self::opt('appPidLocation')));
+            self::crit("Unable to terminate process, be sure to run as user '".$fileowner['name']."' or as root.");
+        }
     }
 
     /**

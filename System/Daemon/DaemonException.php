@@ -15,7 +15,7 @@ namespace Denofi\DaemonBundle\System\Daemon;
  * * 
  */
 
-class Exception extends \Exception
+class DaemonException extends \Exception
 {
 
 }

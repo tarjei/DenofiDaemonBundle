@@ -21,32 +21,26 @@ To find out the group and user id of a specific user you can use the following c
 #### Full Configuration Example
 
 There is a separate configuration for each daemon you create,
-please replace `example` below with the name of your daemon.
+please replace _%name%_ below with the name of your daemon.
 
 ``` yaml
 # app/config/config.yml
 
 denofi_daemon:
     daemons:
-        example:                                                                #Replace with the name of your daemon
-            appName:                example
+        example:
+            appName:                %name%
             appDir:                 %kernel.root_dir%
             appDescription:         Symfony2 System Daemon
-            logLocation:            %kernel.logs_dir%/%kernel.environment%.example.log
+            logLocation:            %kernel.logs_dir%/%name%/%kernel.environment%.%name%.log
             authorName:             Symfony2
             authorEmail:            symfony2.kernel@127.0.0.1
-            appPidLocation:         %kernel.cache_dir%/example/example.daemon.pid
+            appPidLocation:         %kernel.cache_dir%/%name%/%name%.pid
             sysMaxExecutionTime:    0
             sysMaxInputTime:        0
             sysMemoryLimit:         1024M
             appUser:                apache
             appGroup:               apache
-            appRunAsGID:            1000
-            appRunAsUID:            1000
+            appRunAsGID:            33
+            appRunAsUID:            33
 ```
-
-
-
-
-
-
