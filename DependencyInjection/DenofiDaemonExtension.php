@@ -135,6 +135,9 @@ class DenofiDaemonExtension extends Extension
 
             //Create the log file and set owner/group
             if (!file_exists($cnf['logLocation'])) {
+                if (!isdir(dirname($cnf['logLocation']))) {
+                    mkdir(dirname($cnf['logLocation']));
+                }
                 file_put_contents($cnf['logLocation'], '');
 
                 @chown($cnf['logLocation'], $cnf['appUser']);
