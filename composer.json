@@ -1,0 +1,30 @@
+{
+    "name": "tarjei/denofi-daemon-bundle",
+    "type": "symfony-bundle",
+    "description": "DenofiDaemonBundle is a Symfony2 bundle that wraps the PEAR library System_Daemon created by Kevin Vanzonneveld and is a fork of CodeMeme's Daemon Bundle '",
+    "keywords": ["daemon"],
+    "license": "MIT",
+    "version": "master",
+    "authors": [
+        {
+            "name": "Tarjei Huse",
+            "email": "tarjei.huse@gmail.com"
+        },
+        {
+            "name": "Trent Thacker"
+        },
+        {
+            "name": "Jesse Greathouse"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Denofi/DenofiDaemonBundle": ""
+        }
+    },
+    "target-dir": "Denofi/DenofiDaemonBundle"
+}
